@@ -6,9 +6,11 @@ const { CustomPage } = require("../../src/PO/custom_page.po");
 const { CustomPage2 } = require("../../src/PO/custom_page_2.po");
 const { Table } = require("../../src/PO/tables/table.po");
 const Subscribe = require('../../src/PO/forms/subscribe.model');
+const { LeftRailPO } = require('../../src/PO/leftRailPO');
 
 When(/^I go to "([^"]*)"$/, async function (url) {
     await browser.url(url);
+    await browser.maximizeWindow();
 });
 
 When(/^I check the texts of the elements:$/, async function (table) {
@@ -28,10 +30,24 @@ When(/^I expect element: "([^"]*)" (text|value): "([^"]*)"$/, async function (se
         .toEqual(text)
 });
 
-When('I go to {string} menu item', function (item) {
-    // add implementation here
+When('I go to {string} menu item', async function (item) {
+    await $('a[href="./formSubscription.html"]').click();
 });
 
+When('I click Create User menu item', async function () {
+    await LeftRailPO.clickCreateUser();
+});
+
+When('I click Create Subscription menu item', async function () {
+    await LeftRailPO.createSubscriptionItem();
+});
+
+When('I click list of Subscriptions menu item', async function () {
+    await LeftRailPO.listOfSubscriptions();
+});
+When('I click list of Subscriptions 2 menu item', async function () {
+    await $('a[href="./Subscriptions.html"]').click();
+});
 
 When('I login as: {string}, {string}', async function (login, password) {
     await Login.login({ username: login, password: password });
@@ -70,8 +86,22 @@ When(/^I sort table by "([^"]*)"$/, async function (name) {
     // console.log(JSON.stringify(data));
 });
 
+When(/^I fill user form:$/, async function (formYaml) {
+    const formData = YAML.parse(formYaml);
+   // console.log({ formData });
+    const fieldsToFill = ["email", "password", "address1","address2", "city","zip", "description"];
+        const fillFormUsingYaml = async function (obj, userForm) {
+            for (const field in userForm) {
+              await $(`#${userForm[field]}`).setValue(obj[`${userForm[field]}`]);
+            }
+          };
+        //  await $("//a[contains(@href,'./formUser.html')]").click();
+          await fillFormUsingYaml(formData, fieldsToFill);
+          await $('#dashboard > div > div > div > form > button').click(); 
+       //   await browser.pause(15000);
+});
 
-When(/^I fill form:$/, async function (formYaml) {
+When(/^I fill  subscribtion form:$/, async function (formYaml) {
     const formData = YAML.parse(formYaml);
     console.log({ formData });
     console.log(Subscribe.model)
@@ -80,4 +110,26 @@ When(/^I fill form:$/, async function (formYaml) {
         await el.set(formData[elModel.name]);
         await browser.pause(200);
     }
+    await $('#dashboard > div > div > div > form > button').click();
+    await browser.pause(20000);
+
 });
+
+Then (/^I expect to see the corresponding data for first user in List of Subscribtions table$/, async function () {
+
+expect(await $('#table > div.tabulator-tableholder > div > div > div:nth-child(1)').getText()).toEqual("EDU")
+expect(await $('#table > div.tabulator-tableholder > div > div > div:nth-child(2)').getText()).toEqual("test@test.com")
+expect(await $('#table > div.tabulator-tableholder > div > div > div:nth-child(3)').getText()).toEqual("10")
+expect(await $('#table > div.tabulator-tableholder > div > div > div:nth-child(4)').getText()).toEqual("NaN")
+expect(await $('#table > div.tabulator-tableholder > div > div > div:nth-child(6)').getText()).toEqual("description")
+
+});
+Then (/^I expect to see the corresponding data for the second user in List of Subscribtions table$/, async function () {
+
+    expect(await $('#table > div.tabulator-tableholder > div > div > div:nth-child(1)').getText()).toEqual("EDU")
+    expect(await $('#table > div.tabulator-tableholder > div > div > div:nth-child(2)').getText()).toEqual("test2@test.com")
+    expect(await $('#table > div.tabulator-tableholder > div > div > div:nth-child(3)').getText()).toEqual("10")
+    expect(await $('#table > div.tabulator-tableholder > div > div > div:nth-child(4)').getText()).toEqual("NaN")
+    expect(await $('#table > div.tabulator-tableholder > div > div > div:nth-child(6)').getText()).toEqual("description")
+    
+    });

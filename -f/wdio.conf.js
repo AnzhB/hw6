@@ -1,111 +1,124 @@
-const {
-    addStep,
-    addFeature,
-    addAttachment,
-    addIssue,
-    addArgument,
-    addDescription,
-    addEnvironment,
-} = require('@wdio/allure-reporter').default;
-// const maxInstances = 1;
-// const build = 'test build';
-// const bsLocal = false;
-// const idleTimeout = 180000;
-const bsCaps = [
-    {
-        'bstack:options': {
-            "os": "Windows",
-            "osVersion": "10",
-            "local": "false",
-            "seleniumVersion": "3.5.2",
-            "userName": process.env.USER,
-            "accessKey": process.env.KEY,
-        },
-        "browserName": "Edge",
-        "browserVersion": "latest-beta",
-    },
-    {
-        'bstack:options': {
-            "os": "Windows",
-            "osVersion": "10",
-            "local": "false",
-            "seleniumVersion": "3.5.2",
-            "userName": process.env.USER,
-            "accessKey": process.env.KEY,
-        },
-        "browserName": "Firefox",
-        "browserVersion": "latest-beta",
-    },
-    {
-        'bstack:options': {
-            "os": "OS X",
-            "osVersion": "Monterey",
-            "local": "false",
-            "seleniumVersion": "3.14.0",
-            "userName": process.env.USER,
-            "accessKey": process.env.KEY,
-        },
-        "browserName": "Safari",
-        "browserVersion": "15.0",
-    }
-];
-
-const localCaps = [{
-    maxInstances: 5,
-    browserName: 'chrome',
-    pageLoadStrategy: 'eager',
-    acceptInsecureCerts: true,
-    'goog:chromeOptions': {
-        args: process.env.HL === '1' ? ['--headless'] : [],
-    }
-}]
-
-const bsServices = ['browserstack'];
-const localServices = ['chromedriver'];
 exports.config = {
-    user: process.env.USER,
-    key: process.env.KEY,
+    //
+    // ====================
+    // Runner Configuration
+    // ====================
+    //
+    //
+    // ==================
+    // Specify Test Files
+    // ==================
+    // Define which test specs should run. The pattern is relative to the directory
+    // from which `wdio` was called.
+    //
+    // The specs are defined as an array of spec files (optionally using wildcards
+    // that will be expanded). The test for each spec file will be run in a separate
+    // worker process. In order to have a group of spec files run in the same worker
+    // process simply enclose them in an array within the specs array.
+    //
+    // If you are calling `wdio` from an NPM script (see https://docs.npmjs.com/cli/run-script),
+    // then the current working directory is where your `package.json` resides, so `wdio`
+    // will be called from there.
+    //
     specs: [
-        './specs/**/*.js'
+        './test/specs/**/*.js'
     ],
+    // Patterns to exclude.
     exclude: [
         // 'path/to/excluded/files'
     ],
-    automationProtocol: 'webdriver',
+    //
+    // ============
+    // Capabilities
+    // ============
+    // Define your capabilities here. WebdriverIO can run multiple capabilities at the same
+    // time. Depending on the number of capabilities, WebdriverIO launches several test
+    // sessions. Within your capabilities you can overwrite the spec and exclude options in
+    // order to group specific specs to a specific capability.
+    //
+    // First, you can define how many instances should be started at the same time. Let's
+    // say you have 3 different capabilities (Chrome, Firefox, and Safari) and you have
+    // set maxInstances to 1; wdio will spawn 3 processes. Therefore, if you have 10 spec
+    // files and you set maxInstances to 10, all spec files will get tested at the same time
+    // and 30 processes will get spawned. The property handles how many capabilities
+    // from the same test should run tests.
+    //
     maxInstances: 10,
-    capabilities: process.env.HUB === 'bs' ? bsCaps : localCaps,
+    //
+    // If you have trouble getting all important capabilities together, check out the
+    // Sauce Labs platform configurator - a great tool to configure your capabilities:
+    // https://saucelabs.com/platform/platform-configurator
+    //
+    capabilities: [{
+    
+        // maxInstances can get overwritten per capability. So if you have an in-house Selenium
+        // grid with only 5 firefox instances available you can make sure that not more than
+        // 5 instances get started at a time.
+        maxInstances: 5,
+        //
+        browserName: 'chrome',
+        acceptInsecureCerts: true
+        // If outputDir is provided WebdriverIO can capture driver session logs
+        // it is possible to configure which logTypes to include/exclude.
+        // excludeDriverLogs: ['*'], // pass '*' to exclude all driver session logs
+        // excludeDriverLogs: ['bugreport', 'server'],
+    }],
+    //
+    // ===================
+    // Test Configurations
+    // ===================
+    // Define all options that are relevant for the WebdriverIO instance here
+    //
     // Level of logging verbosity: trace | debug | info | warn | error | silent
-    logLevel: 'warn',
+    logLevel: 'info',
+    //
+    // Set specific log levels per logger
+    // loggers:
+    // - webdriver, webdriverio
+    // - @wdio/browserstack-service, @wdio/devtools-service, @wdio/sauce-service
+    // - @wdio/mocha-framework, @wdio/jasmine-framework
+    // - @wdio/local-runner
+    // - @wdio/sumologic-reporter
+    // - @wdio/cli, @wdio/config, @wdio/utils
+    // Level of logging verbosity: trace | debug | info | warn | error | silent
+    // logLevels: {
+    //     webdriver: 'info',
+    //     '@wdio/appium-service': 'info'
+    // },
+    //
+    // If you only want to run your tests until a specific amount of tests have failed use
+    // bail (default is 0 - don't bail, run all tests).
     bail: 0,
+    //
+    // Set a base URL in order to shorten url command calls. If your `url` parameter starts
+    // with `/`, the base url gets prepended, not including the path portion of your baseUrl.
+    // If your `url` parameter starts without a scheme or `/` (like `some/path`), the base url
+    // gets prepended directly.
     baseUrl: 'http://localhost',
+    //
+    // Default timeout for all waitFor* commands.
     waitforTimeout: 10000,
+    //
+    // Default timeout in milliseconds for request
+    // if browser driver or grid doesn't send response
     connectionRetryTimeout: 120000,
+    //
+    // Default request retries count
     connectionRetryCount: 3,
-    // services: process.env.HUB === 'bs' ? bsServices : localServices,
-    services: localServices,
+    //
+    // Test runner services
+    // Services take over a specific job you don't want to take care of. They enhance
+    // your test setup with almost no effort. Unlike plugins, they don't add new
+    // commands. Instead, they hook themselves up into the test process.
+    services: ['chromedriver'],
+    
+    // Framework you want to run your specs with.
+    // The following are supported: Mocha, Jasmine, and Cucumber
+    // see also: https://webdriver.io/docs/frameworks
+    //
+    // Make sure you have the wdio adapter package for the specific framework installed
+    // before running any tests.
     framework: 'mocha',
-    cucumberOpts: {
-        scenarioLevelReporter: true,
-        retry: process.env.RETRY || 0,
-        backtrace: true,
-        // requireModule: ['@babel/register'],
-        failAmbiguousDefinitions: true,
-        failFast: false,
-        ignoreUndefinedDefinitions: false,
-        name: [],
-        snippets: true,
-        source: true,
-        profile: [],
-        require: [
-            './features/step_definitions/**/*.js',
-        ],
-        snippetSyntax: undefined,
-        strict: true,
-        tagExpression: 'not @Pending',
-        tagsInTitle: false,
-        timeout: process.env.DBG === '1' ? 600000 : 180000,
-    },
-
     //
     // The number of times to retry the entire specfile when it fails as a whole
     // specFileRetries: 1,
@@ -119,23 +132,19 @@ exports.config = {
     // Test reporter for stdout.
     // The only one supported by default is 'dot'
     // see also: https://webdriver.io/docs/dot-reporter
-    reporters: ['spec',
-        ['allure', {
-            outputDir: 'allure-results',
-            disableWebdriverStepsReporting: true,
-            // disableWebdriverScreenshotsReporting: true,
-            useCucumberStepReporter: false,
-        }]],
+    reporters: ['spec'],
 
 
+    
+    //
     // Options to be passed to Mocha.
     // See the full list at http://mochajs.org/
     mochaOpts: {
         ui: 'bdd',
-        require: ['./lib/test.js'],
-        timeout: 0,
-        retries: 0
+        timeout: 60000
     },
+    //
+    // =====
     // Hooks
     // =====
     // WebdriverIO provides several hooks you can use to interfere with the test process in order to enhance
@@ -177,14 +186,8 @@ exports.config = {
      * @param {Array.<String>} specs        List of spec file paths that are to be run
      * @param {Object}         browser      instance of created browser/device session
      */
-    before: function (capabilities, specs) {
-
-    },
-    async beforeScenario(world) {
-        addEnvironment('SERVER', 'LOCAL');
-        addEnvironment('LOGGING', 'DISABLE');
-        addEnvironment('HEADLESS', 'FALSE');
-    },
+    // before: function (capabilities, specs) {
+    // },
     /**
      * Runs before a WebdriverIO command gets executed.
      * @param {String} commandName hook command name
@@ -215,37 +218,6 @@ exports.config = {
      */
     // afterHook: function (test, context, { error, result, duration, passed, retries }) {
     // },
-
-    // afterHook: function() {
-    //     let name = 'ERROR-chrome-' + Date.now()
-    //     browser.takeScreenshot('./errorShots/' + name + '.png')
-    //     addAttachment('screenshot', 'faild test window screenshot')
-    //     Allure.addAttachment("My attachment", "My attachment content");
-
-
-    //     Allure.prototype.attachment = function (name, content, type) {
-    //         const fileName = this.reporter.writeAttachment(content, type);
-    //         this.currentExecutable.addAttachment(name, type, fileName);
-    //     };
-
-
-    // },    
-
-    afterStep: function (step, scenario, result, context) {
-        // console.log({ step });
-        // console.log({ result });
-        // console.log({ scenario });
-        // console.log({ context });
-        if (step.keyword !== undefined) {
-            const content = {
-                content: '123',
-                name: 'name'
-            };
-            let status = result.passed ? 'passed' : 'failed';
-            addStep(step.keyword.toUpperCase() + step.text, content, status);
-        }
-    },
-
     /**
      * Function to be executed after a test (in Mocha/Jasmine only)
      * @param {Object}  test             test object
@@ -256,45 +228,9 @@ exports.config = {
      * @param {Boolean} result.passed    true if test has passed, otherwise false
      * @param {Object}  result.retries   informations to spec related retries, e.g. `{ attempts: 0, limit: 0 }`
      */
-    // afterTest: async function (test, context, { error, result, duration, passed, retries }) {
-    //    // if (!passed) {
-    //         if (error) {
-    //         await browser.takeScreenshot();
-    //         addAttachment('attach name', 'attach')
-        
-    //     }
+    // afterTest: function(test, context, { error, result, duration, passed, retries }) {
     // },
 
-    afterScenario: async (world, result, context) => {
-        if (world.result.status === 'SKIPPED') {
-            world.result.status = 'FAILED'
-        }
-        console.log({result})
-        console.log(result.passed)
-        console.log(result.passed)
-        console.log(result.passed)
-        addDescription('TESTTESTTEST!!! <script>alert(123)</script>')
-
-        if (!result.passed) {
-            addDescription('TESTTESTTEST!!!<img src="https://s.keepmeme.com/files/en_posts/20200908/blurred-surprised-cat-meme-5b734a45210ef3b6657bcbe2831715fa.jpg">')
-         
-           // addAttachment('attachment for faild test2 ',  await browser.takeScreenshot() , 'mimeType:image/png');
-            addAttachment('attachment for faild test3 ',  await browser.takeScreenshot() , 'image/png');
-    
-          //  await browser.takeScreenshot();
-
-          const allCookies = await browser.getCookies()
-          console.log(allCookies);
-          console.log(JSON.stringify(allCookies));
-          addAttachment('attachment cookie',  allCookies , 'text/plain');
-
-          var codeHTML = await $('html').getHTML();
-          console.log(codeHTML);
-          addAttachment('attachment html code',  codeHTML , 'text/html'); 
-
-        }
-        // await browser.reloadSession();
-    },
 
     /**
      * Hook that gets executed after the suite has ended
@@ -339,10 +275,10 @@ exports.config = {
     // onComplete: function(exitCode, config, capabilities, results) {
     // },
     /**
-     * Gets executed when a refresh happens.
-     * @param {String} oldSessionId session ID of the old session
-     * @param {String} newSessionId session ID of the new session
-     */
+    * Gets executed when a refresh happens.
+    * @param {String} oldSessionId session ID of the old session
+    * @param {String} newSessionId session ID of the new session
+    */
     //onReload: function(oldSessionId, newSessionId) {
     //}
 }

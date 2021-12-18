@@ -1,4 +1,10 @@
+
+
 Feature: Allure Demo Feature
+
+ Background:
+    When I go to "https://viktor-silakov.github.io/course-sut/index.html?quick"
+    When I login as: "walker@jw.com", "password"
 
   Scenario: Allure Demo Scenario Passed
     Given I setup step

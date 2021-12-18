@@ -5,7 +5,7 @@ Feature: Form demo
     When I wait for "1" second
     When I go to "https://viktor-silakov.github.io/course-sut/formSubscription.html"
     When I wait for "1" second
-    When I fill form:
+    When I fill  subscribtion form:
     """
     plan: Premium
     years: 10
