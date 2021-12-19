@@ -45,9 +45,11 @@ When('I click Create Subscription menu item', async function () {
 When('I click list of Subscriptions menu item', async function () {
     await LeftRailPO.listOfSubscriptions();
 });
-When('I click list of Subscriptions 2 menu item', async function () {
-    await $('a[href="./Subscriptions.html"]').click();
+
+When('I click log out', async function () {
+    await $('#dashboard > header > div > div > a:nth-child(2)').click();
 });
+
 
 When('I login as: {string}, {string}', async function (login, password) {
     await Login.login({ username: login, password: password });
@@ -111,25 +113,33 @@ When(/^I fill  subscribtion form:$/, async function (formYaml) {
         await browser.pause(200);
     }
     await $('#dashboard > div > div > div > form > button').click();
-    await browser.pause(20000);
+    await browser.pause(5000);
 
 });
 
 Then (/^I expect to see the corresponding data for first user in List of Subscribtions table$/, async function () {
-
-expect(await $('#table > div.tabulator-tableholder > div > div > div:nth-child(1)').getText()).toEqual("EDU")
-expect(await $('#table > div.tabulator-tableholder > div > div > div:nth-child(2)').getText()).toEqual("test@test.com")
-expect(await $('#table > div.tabulator-tableholder > div > div > div:nth-child(3)').getText()).toEqual("10")
-expect(await $('#table > div.tabulator-tableholder > div > div > div:nth-child(4)').getText()).toEqual("NaN")
-expect(await $('#table > div.tabulator-tableholder > div > div > div:nth-child(6)').getText()).toEqual("description")
-
-});
-Then (/^I expect to see the corresponding data for the second user in List of Subscribtions table$/, async function () {
-
     expect(await $('#table > div.tabulator-tableholder > div > div > div:nth-child(1)').getText()).toEqual("EDU")
-    expect(await $('#table > div.tabulator-tableholder > div > div > div:nth-child(2)').getText()).toEqual("test2@test.com")
+    expect(await $('#table > div.tabulator-tableholder > div > div > div:nth-child(2)').getText()).toEqual("test@test.com")
     expect(await $('#table > div.tabulator-tableholder > div > div > div:nth-child(3)').getText()).toEqual("10")
     expect(await $('#table > div.tabulator-tableholder > div > div > div:nth-child(4)').getText()).toEqual("NaN")
     expect(await $('#table > div.tabulator-tableholder > div > div > div:nth-child(6)').getText()).toEqual("description")
+
+});
+
+Then (/^I expect to see the corresponding data for the second user in List of Subscribtions table$/, async function () {
+    expect(await $('#table > div.tabulator-tableholder > div > div.tabulator-row.tabulator-selectable.tabulator-row-even > div:nth-child(1)').getText()).toEqual("EDU")
+    expect(await $('#table > div.tabulator-tableholder > div > div.tabulator-row.tabulator-selectable.tabulator-row-even > div:nth-child(2)').getText()).toEqual("test2@test.com")
+    expect(await $('#table > div.tabulator-tableholder > div > div.tabulator-row.tabulator-selectable.tabulator-row-even > div:nth-child(3)').getText()).toEqual("10")
+    expect(await $('#table > div.tabulator-tableholder > div > div.tabulator-row.tabulator-selectable.tabulator-row-even > div:nth-child(4)').getText()).toEqual("NaN")
+    expect(await $('#table > div.tabulator-tableholder > div > div.tabulator-row.tabulator-selectable.tabulator-row-even > div:nth-child(6)').getText()).toEqual("description2")
     
-    });
+});
+
+Then (/^I expect to see the corresponding data for the third user in List of Subscribtions table$/, async function () {
+    expect(await $('#table > div.tabulator-tableholder > div > div:nth-child(3) > div:nth-child(1)').getText()).toEqual("PREM")
+    expect(await $('#table > div.tabulator-tableholder > div > div:nth-child(3) > div:nth-child(2)').getText()).toEqual("test3@test.com")
+    expect(await $('#table > div.tabulator-tableholder > div > div:nth-child(3) > div:nth-child(3)').getText()).toEqual("5")
+    expect(await $('#table > div.tabulator-tableholder > div > div:nth-child(3) > div:nth-child(4)').getText()).toEqual("NaN")
+    expect(await $('#table > div.tabulator-tableholder > div > div:nth-child(3) > div:nth-child(6)').getText()).toEqual("description3")
+    
+});
